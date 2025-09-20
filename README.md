@@ -1,4 +1,4 @@
-# 🐋 turingpi-swarm
+# 🐋 turingpi-homelab
 
 This repository contains Docker Compose files for deploying services on a Docker Swarm cluster.
 Currently includes:
