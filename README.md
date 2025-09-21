@@ -7,6 +7,7 @@ This repository contains Docker Compose files for deploying services on a Turing
 - Swarm
   - [Portainer](https://www.portainer.io) — web-based container management
   - [Pi-hole](https://pi-hole.net) — network-wide ad blocking
+    - Monitoring (Prometheus, Grafana, Node Exporter)
 
 - Compose
   - [Home Assistant](https://www.home-assistant.io) — home automation platform
@@ -17,9 +18,9 @@ This repository contains Docker Compose files for deploying services on a Turing
 - Docker Compose installed
 - Docker Swarm initialized:
 
-    ```bash
-    sudo docker swarm init --advertise-addr <your-node-ip>
-    ```
+  ```bash
+  sudo docker swarm init --advertise-addr <your-node-ip>
+  ```
 
 - At least one manager node (for Swarm services)
 
@@ -97,6 +98,9 @@ These services use Docker volumes to store configuration and data so they surviv
 
 - Portainer → `portainer_data`
 - Pi-hole → `pihole_data`
+- Home Assistant → `homeassistant_volume`
+- Prometheus → `monitoring_prometheus_volume`
+- Grafana → `monitoring_grafana_volume`
 
 You don’t need to manage these manually for day-to-day use. Just keep in mind that if you ever rebuild your cluster from scratch, restoring these volumes will bring back your configs.
 
@@ -142,69 +146,86 @@ Alternatively, update the image: tag in your Compose file and redeploy the stack
 
 - **Portainer**
 
-    Deploy:
+  Deploy:
 
-    ```bash
-    sudo docker stack deploy -c portainer-compose.yaml portainer
-    ```
+  ```bash
+  sudo docker stack deploy -c portainer-compose.yaml portainer
+  ```
 
-    Accessible at http://\<node-ip\>:9000
+  Accessible at http://\<node-ip\>:9000
 
 - **Pi-hole**
 
-    Deploy:
+  Deploy:
 
-    ```bash
-    sudo docker stack deploy -c pihole-compose.yaml pihole
-    ```
+  ```bash
+  sudo docker stack deploy -c pihole-compose.yaml pihole
+  ```
 
-    Accessible at http://\<node-ip\>/admin
+  Accessible at http://\<node-ip\>/admin
 
 - **Home Assistant**
 
-    Deploy:
+  Deploy:
 
-    ```bash
-    sudo docker compose -f homeassistant-compose.yaml up -d
-    ```
+  ```bash
+  sudo docker compose -f homeassistant-compose.yaml up -d
+  ```
 
-    Accessible at http://\<node-ip\>:8123
+  Accessible at http://\<node-ip\>:8123
+
+- **Monitoring (Prometheus + Grafana + Node Exporter)**
+
+  Deploy:
+
+  ```bash
+  sudo docker stack deploy -c monitoring-compose.yaml monitoring
+  ```
+
+  Access:
+  - Prometheus: http://`<node-ip>`:9090
+  - Grafana: http://`<node-ip>`:3000
+  - Node Exporter metrics per node (if port published): http://`<node-ip>`:9100/metrics
+
+  Notes:
+  - Node Exporter runs in global mode (one per node)
+  - Prometheus discovers exporters via Swarm DNS (no static target maintenance)
 
 ## 🧹 Maintenance
 
 - List stacks
 
-    ```bash
-    docker stack ls
-    ```
+  ```bash
+  docker stack ls
+  ```
 
 - List services in a stack
 
-    ```bash
-    docker stack services <stack>
-    ```
+  ```bash
+  docker stack services <stack>
+  ```
 
 - List services created by compose
 
-    ```bash
-    sudo docker compose -f \<compose-file\>.yaml ps
-    ```
+  ```bash
+  sudo docker compose -f \<compose-file\>.yaml ps
+  ```
 
 - List volumes
 
-    ```bash
-    docker volume ls
-    ```
+  ```bash
+  docker volume ls
+  ```
 
 - List networks
 
-    ```bash
-    docker network ls
-    ```
+  ```bash
+  docker network ls
+  ```
 
 - Remove unused resources
 
-    ```bash
-    docker network prune
-    docker volume prune
-    ```
+  ```bash
+  docker network prune
+  docker volume prune
+  ```
