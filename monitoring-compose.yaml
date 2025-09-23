@@ -15,7 +15,18 @@ services:
       replicas: 1
       placement:
         constraints: [node.role == manager]
-
+  
+  blackbox:
+    image: prom/blackbox-exporter:latest
+    ports:
+      - "9115:9115"
+    networks:
+      - network
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints: [node.role == manager]
 
   prometheus-node-exporter:
     image: prom/node-exporter:latest

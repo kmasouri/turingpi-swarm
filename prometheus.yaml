@@ -1,14 +1,43 @@
+# I've setup 2 custom DNS records in my router:
+#   - computer-1.lab.local
+#   - lab.local
+# Adjust the targets below to match your setup.
+
 global:
   scrape_interval: 15s
 
 scrape_configs:
   - job_name: "prometheus"
     static_configs:
-      - targets: ["localhost:9090"]
+      - targets:
+        - lab.local:9090
 
   - job_name: "node"
-    dns_sd_configs:
-      - names:
-          - "tasks.monitoring_prometheus-node-exporter"
-        type: A
-        port: 9100
+    static_configs:
+      - targets:
+        - computer-1.local:9100
+
+  - job_name: 'blackbox'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+        - http://lab.local:3000 # Grafana
+        - http://lab.local:9090 # Prometheus
+        - http://computer-1.local:9100 # Prometheus Node Exporter (computer-1 host)
+        - http://lab.local:8123  # Home Assistant
+        - http://lab.local:9000 # Portainer
+        - http://lab.local/admin # Pi-hole
+    relabel_configs:
+      # Take the target from the static_configs and pass it as the "target=" parameter to Blackbox
+      - source_labels: [__address__]
+        target_label: __param_target
+
+      # Set the "instance" label to the actual target (so Grafana shows the real site, not just blackbox:9115)
+      - source_labels: [__param_target]
+        target_label: instance
+
+      # Tell Prometheus to scrape Blackbox itself instead of the target directly
+      - target_label: __address__
+        replacement: lab.local:9115

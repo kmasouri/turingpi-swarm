@@ -7,7 +7,7 @@ This repository contains Docker Compose files for deploying services on a Turing
 - Swarm
   - [Portainer](https://www.portainer.io) — web-based container management
   - [Pi-hole](https://pi-hole.net) — network-wide ad blocking
-    - Monitoring (Prometheus, Grafana, Node Exporter)
+    - Monitoring (Prometheus, Grafana, Node Exporter, Blackbox Exporter)
 
 - Compose
   - [Home Assistant](https://www.home-assistant.io) — home automation platform
@@ -99,8 +99,8 @@ These services use Docker volumes to store configuration and data so they surviv
 - Portainer → `portainer_data`
 - Pi-hole → `pihole_data`
 - Home Assistant → `homeassistant_volume`
-- Prometheus → `monitoring_prometheus_volume`
-- Grafana → `monitoring_grafana_volume`
+- Prometheus → `prometheus_volume`
+- Grafana → `grafana_volume`
 
 You don’t need to manage these manually for day-to-day use. Just keep in mind that if you ever rebuild your cluster from scratch, restoring these volumes will bring back your configs.
 
@@ -174,7 +174,7 @@ Alternatively, update the image: tag in your Compose file and redeploy the stack
 
   Accessible at http://\<node-ip\>:8123
 
-- **Monitoring (Prometheus + Grafana + Node Exporter)**
+- **Monitoring (Prometheus + Grafana + Node Exporter + Blackbox Exporter)**
 
   Deploy:
 
@@ -185,11 +185,13 @@ Alternatively, update the image: tag in your Compose file and redeploy the stack
   Access:
   - Prometheus: http://`<node-ip>`:9090
   - Grafana: http://`<node-ip>`:3000
+  - Blackbox Exporter probe endpoint: http://`<node-ip>`:9115
   - Node Exporter metrics per node (if port published): http://`<node-ip>`:9100/metrics
 
   Notes:
   - Node Exporter runs in global mode (one per node)
-  - Prometheus discovers exporters via Swarm DNS (no static target maintenance)
+  - This setup uses explicit static targets in `prometheus.yaml` for clarity.
+  - You can switch back to Swarm DNS discovery (e.g. `tasks.monitoring_prometheus-node-exporter`) if you prefer dynamic service-based discovery.
 
 ## 🧹 Maintenance
 
