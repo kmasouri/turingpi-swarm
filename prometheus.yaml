@@ -28,7 +28,7 @@ scrape_configs:
         - http://computer-1.local:9100 # Prometheus Node Exporter (computer-1 host)
         - http://lab.local:8123  # Home Assistant
         - http://lab.local:9000 # Portainer
-        - http://lab.local/admin # Pi-hole
+        - http://lab.local:8080/admin # Pi-hole
     relabel_configs:
       # Take the target from the static_configs and pass it as the "target=" parameter to Blackbox
       - source_labels: [__address__]

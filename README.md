@@ -162,7 +162,7 @@ Alternatively, update the image: tag in your Compose file and redeploy the stack
   sudo docker stack deploy -c pihole-compose.yaml pihole
   ```
 
-  Accessible at http://\<node-ip\>/admin
+  Accessible at http://\<node-ip\>:8080/admin
 
 - **Home Assistant**
 
