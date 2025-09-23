@@ -29,7 +29,6 @@ services:
       placement:
         constraints: [node.role == manager]
 
-
 networks:
   network:
     driver: overlay
