@@ -1,0 +1,32 @@
+{
+  "title": "Home",
+  "theme": "dark",
+  "navColor": "deep-purple darken-1",
+  "links": [
+    {
+      "name": "Portainer",
+      "url": "http://lab.local:9000",
+      "icon": "dashboard"
+    },
+    {
+      "name": "Grafana",
+      "url": "http://lab.local:3000",
+      "icon": "insert_chart"
+    },
+    {
+      "name": "Prometheus",
+      "url": "http://lab.local:9090",
+      "icon": "insights"
+    },
+    {
+      "name": "Pi-hole",
+      "url": "http://lab.local:8080/admin",
+      "icon": "security"
+    },
+    {
+      "name": "Home Assistant",
+      "url": "http://lab.local:8123",
+      "icon": "home"
+    }
+  ]
+}
