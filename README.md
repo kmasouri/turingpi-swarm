@@ -5,9 +5,13 @@
 This repository contains Docker Compose files for deploying services on a Turing Pi cluster. Some services use Docker Swarm, while others (like Home Assistant) use standard Docker Compose.
 
 - Swarm
+
   - [Portainer](https://www.portainer.io) — web-based container management
   - [Pi-hole](https://pi-hole.net) — network-wide ad blocking
+
     - Monitoring (Prometheus, Grafana, Node Exporter, Blackbox Exporter)
+
+  - [Portal](https://github.com/kmasouri/homelab-portal) — portal for your homelab apps and bookmarks
 
 - Compose
   - [Home Assistant](https://www.home-assistant.io) — home automation platform
@@ -68,7 +72,7 @@ sudo docker compose -f homeassistant-compose.yaml up -d
 
 To stop a service:
 
-``` bash
+```bash
 sudo docker compose -f \<compose-file\>.yaml down
 ```
 
@@ -89,7 +93,6 @@ networks:
   network:
     driver: overlay
     attachable: true
-
 ```
 
 ## 💾 Volumes (Persistent Data)
@@ -183,15 +186,37 @@ Alternatively, update the image: tag in your Compose file and redeploy the stack
   ```
 
   Access:
+
   - Prometheus: http://`<node-ip>`:9090
   - Grafana: http://`<node-ip>`:3000
   - Blackbox Exporter probe endpoint: http://`<node-ip>`:9115
   - Node Exporter metrics per node (if port published): http://`<node-ip>`:9100/metrics
 
   Notes:
+
   - Node Exporter runs in global mode (one per node)
   - This setup uses explicit static targets in `prometheus.yaml` for clarity.
   - You can switch back to Swarm DNS discovery (e.g. `tasks.monitoring_prometheus-node-exporter`) if you prefer dynamic service-based discovery.
+
+- **Homelab Portal**
+
+  A lightweight static portal (single-page app) served by Nginx to provide quick links to the main homelab services.
+
+  Deploy:
+
+  ```bash
+  sudo docker stack deploy -c homelab-portal-compose.yaml portal
+  ```
+
+  Accessible at http://`<node-ip>`/ (port 80)
+
+  Customization is done via the mounted `homelab-portal-config.json` file. Update it and then force a service update to refresh cached content:
+
+  ```bash
+  sudo docker service update --force portal_homelab-portal
+  ```
+
+  [See full configuration reference.](https://github.com/kmasouri/homelab-portal?tab=readme-ov-file#%EF%B8%8F-configuration)
 
 ## 🧹 Maintenance
 
